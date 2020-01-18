@@ -1,0 +1,60 @@
+{
+	"name": "jshelleasy",
+	"displayName": "jshelleasy",
+	"description": "Simple Jshell extension to run and java code inline",
+	"version": "0.0.1",
+	"publisher": "Senthilnathan A",
+	"icon" : "icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/senthilnathan87/jshelleasy.git"
+	},
+	"engines": {
+		"vscode": "^1.41.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.jshelleasy",
+		"onCommand:extension.jshelleasy.new"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.jshelleasy",
+				"title": "JShell Easy - REPL"
+			}
+		],
+		"keybindings": [
+            {
+                "command": "extension.jshelleasy",
+                "key": "ctrl+shift+J",
+                "mac": "ctrl+shift+J"
+            }
+		]
+	},
+	"scripts": {
+		"test": "node ./test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^12.11.7",
+		"@types/vscode": "^1.41.0",
+		"eslint": "^6.6.0",
+		"glob": "^7.1.5",
+		"mocha": "^6.2.2",
+		"typescript": "^3.6.4",
+		"vscode-test": "^1.2.2"
+	},
+	"files.associations": {
+        "*.jsh": "java"
+	},
+	"languages": [{
+        "id": "java",
+        "extensions": [ ".java", ".jav" ],
+        "aliases": [ "Java", "java" ]
+    }]
+}
