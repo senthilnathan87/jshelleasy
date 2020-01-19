@@ -1,9 +1,9 @@
 {
 	"name": "jshelleasy",
-	"displayName": "jshelleasy",
+	"displayName": "JShell Easy",
 	"description": "Simple Jshell extension to run and java code inline",
 	"version": "0.0.1",
-	"publisher": "Senthilnathan A",
+	"publisher": "SenthilnathanA",
 	"icon" : "icon.png",
 	"repository": {
 		"type": "git",
@@ -24,7 +24,7 @@
 		"commands": [
 			{
 				"command": "extension.jshelleasy",
-				"title": "JShell Easy - REPL"
+				"title": "JShell Easy: Start Session"
 			}
 		],
 		"keybindings": [
