@@ -4,7 +4,7 @@ A simple VSCode extension for running Java code inline using jshell. Code gets e
 
 ## Requirements
 
-Requires Java 9> (jshell should be accessible globally)
+Requires >= JDK9 (jshell should be accessible globally)
 
 ## Usage
 
