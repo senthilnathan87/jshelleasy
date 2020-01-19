@@ -16,7 +16,7 @@ or
 
 ## Demo
 
-![Usage](https://raw.githubusercontent.com/senthilnathan87/jshelleasy/jshelleasy-demo.gif?raw=true "Usage Demo")
+![Usage](https://raw.githubusercontent.com/senthilnathan87/jshelleasy/master/jshelleasy-demo.gif?raw=true "Usage Demo")
 
 ## Release Notes
 
