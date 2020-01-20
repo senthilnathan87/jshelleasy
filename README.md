@@ -4,7 +4,7 @@ A simple VSCode extension for running Java code inline using jshell. Code gets e
 
 ## Requirements
 
-Requires Java 9> (jshell should be accessible globally)
+Requires >= JDK 9 (jshell should be accessible globally)
 
 ## Usage
 
@@ -20,11 +20,16 @@ or
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### 1.0.1
+
+* Windows Support added
+* `*.jsh` support Java syntax highlighting using Textmate's java.plist
+* Minor performance improvements
+
 
 ### 0.0.1
 
-Initial release of the extension. Support inline compilation of Java code using jshell
+* Initial release of the extension. Support inline compilation of Java code using jshell
 
 
 -----------------------------------------------------------------------------------------------------------

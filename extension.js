@@ -2,8 +2,10 @@ const vscode = require("vscode");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-let sessionTempFile;
+const isWindows = os.platform() === "win32";
 
+let sessionTempFile;
+let lastSnippet;
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -13,7 +15,7 @@ function activate(context) {
   let panel;
   let changeEventOnEdit;
   let lastChangeVersion;
-  let loaded = false;
+  let loaded = !isWindows;
   let cmd = "";
   let runJshellEasyCommand = vscode.commands.registerCommand(
     "extension.jshelleasy",
@@ -21,14 +23,14 @@ function activate(context) {
       vscode.window.showInformationMessage(
         "Created a new file for JShell Easy"
       );
-      var setting = vscode.Uri.parse("untitled:" + "snippets.java");
+      var setting = vscode.Uri.parse("untitled:" + "snippets.jsh");
       vscode.workspace.openTextDocument(setting).then(
         document => {
           vscode.window.showTextDocument(document, 1, false).then(e => {
             e.edit(edit => {
               edit.insert(
                 new vscode.Position(0, 0),
-                "//JShell Easy Playgroud \n\n"
+                "//JShell Easy Playground \n\n"
               );
             });
           });
@@ -39,11 +41,10 @@ function activate(context) {
         }
       );
 
-      createTempFile("jshellrun.jsh");
-      vscode.window.setStatusBarMessage(
-        "Starting JShell inline to the current active file",
-        2000
-      );
+      if (isWindows) {
+        createTempFile("jshellrun.jsh");
+      }
+      vscode.window.setStatusBarMessage("Starting JShell Easy Session", 2000);
       if (!panel || panel._isDisposed) {
         panel = vscode.window.createWebviewPanel(
           "jshellEasy",
@@ -55,13 +56,13 @@ function activate(context) {
       panel.reveal(vscode.ViewColumn.Two);
 
       vscode.workspace.onDidChangeTextDocument(changeEvent => {
-        if (changeEvent.document.uri.fsPath === "snippets.java") {
+        if (changeEvent.document.uri.fsPath === "snippets.jsh") {
           changeEventOnEdit = changeEvent;
         }
       });
 
       vscode.workspace.onDidCloseTextDocument(document => {
-        if (document.uri.fsPath === "snippets.java") {
+        if (document.uri.fsPath === "snippets.jsh") {
           deactivate(panel);
         }
       });
@@ -81,13 +82,18 @@ function activate(context) {
       function executeJshell(document) {
         if (!loaded) return;
 
+        panel.webview.html;
+        let text = document.getText();
+        if (lastSnippet && text.trim() === lastSnippet.trim()) {
+          return;
+        }
         panel.webview.html = panel.webview.html.replace(
           "</html>",
           "<div style='font-size: 15px;'>Running.... </div></html>"
         );
-        // }
-        panel.webview.html;
-        let text = document.getText() + "\n\n/exit";
+        
+        lastSnippet = text;
+        text += "\n\n/exit";
         const cp = require("child_process");
         writeToTempFile(sessionTempFile, text)
           .then(() => {
@@ -101,7 +107,12 @@ function activate(context) {
                 console.log("error: " + err);
               }
               if (stderr) {
-                console.log("error: " + stderr);
+                panel.webview.html =
+                  "<html style='font-size: 15px;'> \
+                        <div>Requirements are not met. Please check the following</div> <ul>\
+                          <li>Jdk9+ is required</li> \
+                          <li>jshell should be accessible globally</li> \
+                        </ul></html>";
               }
             });
           })
@@ -152,15 +163,21 @@ function activate(context) {
           });
           loaded = true;
           sessionTempFile = tempFilePath;
-          if (os.platform() === "win32") {
-            cmd = "jshell " + sessionTempFile;
+          if (isWindows) {
+            cmd = "type " + sessionTempFile + " | jshell --feedback normal";
           } else {
-            cmd = "cat " + sessionTempFile + " | jshell --feedback normal";
+            cmd = "cat " + sessionTempFile + " | jshell --feedback normal"; // Discontinued
           }
         });
       }
 
       function writeToTempFile(tempPath, data, encoding = "utf8") {
+        if (!isWindows) {
+          cmd = "printf '"
+            .concat(data.replace(/'/g, "'\\''"))
+            .concat("' | jshell --feedback normal");
+          return Promise.resolve(data);
+        }
         return new Promise(function(resolve, reject) {
           fs.writeFile(tempPath, data, encoding, errorFile => {
             if (errorFile) console.log(errorFile);
@@ -182,7 +199,10 @@ exports.activate = activate;
 function deactivate(panel) {
   console.log("Cleanup");
   panel.dispose();
-  fs.unlink(sessionTempFile, err => console.log(err));
+  if (isWindows) {
+    fs.unlink(sessionTempFile, err => console.log(err));
+  }
+  lastSnippet = undefined;
   sessionTempFile = undefined;
 }
 
